@@ -23,5 +23,6 @@ public class DequeDemo {
         }
         Deque<Integer> deque2 = new LinkedList<>();// insertion,delection somewhere in middle
         deque1.remove(10);
+        System.out.println(deque2);
     }
 }

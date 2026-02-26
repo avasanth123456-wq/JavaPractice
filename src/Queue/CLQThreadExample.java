@@ -29,5 +29,6 @@ public class CLQThreadExample {
 
         producer.start();
         consumer.start();
+
     }
 }
