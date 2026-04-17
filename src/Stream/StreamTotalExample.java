@@ -102,5 +102,9 @@ public class StreamTotalExample {
         executor.submit(producer);
         executor.submit(consumer);
 
+
+        executor.shutdown();
+        executor.awaitTermination(10, TimeUnit.SECONDS);
+
     }
 }
