@@ -7,7 +7,7 @@ abstract class Animal {
     }
 }
 
-
+//good programm
 class Pig extends Animal {
     public void animalSound() {
 
