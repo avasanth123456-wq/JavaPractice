@@ -1,10 +1,10 @@
-package WorldAnimal;
+package WorldAnimals;
 
-class Animal {
+class Animals {
     String color = "White";
 
 
-    Animal() {
+    Animals() {
         System.out.println("Animal constructor called");
     }
 
@@ -15,7 +15,7 @@ class Animal {
 }
 
 
-class Dog extends Animal {
+class Dog extends Animals {
     String color = "Black";
 
 
