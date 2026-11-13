@@ -1,0 +1,170 @@
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+// Main Bank Account Class
+class BankAccount {
+
+    private int balance = 10000;
+
+    // Synchronized deposit method
+    public synchronized void deposit(int amount) {
+
+        String threadName = Thread.currentThread().getName();
+
+        System.out.println(threadName + " is depositing: " + amount);
+
+        balance = balance + amount;
+
+        System.out.println("Deposit successful!");
+        System.out.println("Current Balance: " + balance);
+    }
+
+    // Synchronized withdraw method
+    public synchronized void withdraw(int amount) {
+
+        String threadName = Thread.currentThread().getName();
+
+        System.out.println(threadName + " is withdrawing: " + amount);
+
+        if (balance >= amount) {
+
+            balance = balance - amount;
+
+            System.out.println("Withdrawal successful!");
+
+        } else {
+
+            System.out.println("Insufficient Balance!");
+        }
+
+        System.out.println("Current Balance: " + balance);
+    }
+
+    public synchronized int getBalance() {
+        return balance;
+    }
+}
+
+// Runnable Task Class
+class BankTransaction implements Runnable {
+
+    private BankAccount account;
+    private String transactionType;
+    private int amount;
+
+    public BankTransaction(
+            BankAccount account,
+            String transactionType,
+            int amount) {
+
+        this.account = account;
+        this.transactionType = transactionType;
+        this.amount = amount;
+    }
+
+    @Override
+    public void run() {
+
+        try {
+
+            System.out.println(
+                    Thread.currentThread().getName()
+                    + " started");
+
+            Thread.sleep(1000);
+
+            if (transactionType.equals("DEPOSIT")) {
+
+                account.deposit(amount);
+
+            } else if (transactionType.equals("WITHDRAW")) {
+
+                account.withdraw(amount);
+            }
+
+            System.out.println(
+                    Thread.currentThread().getName()
+                    + " completed");
+
+        } catch (InterruptedException e) {
+
+            Thread.currentThread().interrupt();
+            System.out.println("Thread interrupted!");
+
+        }
+    }
+}
+
+// Main Application
+public class Main {
+
+    public static void main(String[] args) {
+
+        System.out.println("===== BANK MANAGEMENT SYSTEM =====");
+
+        // Create Bank Account Object
+        BankAccount account = new BankAccount();
+
+        System.out.println(
+                "Initial Balance: " + account.getBalance());
+
+        // Create Thread Pool
+        ExecutorService executor =
+                Executors.newFixedThreadPool(3);
+
+        // Create Multiple Tasks
+        Runnable task1 =
+                new BankTransaction(account, "DEPOSIT", 2000);
+
+        Runnable task2 =
+                new BankTransaction(account, "WITHDRAW", 1000);
+
+        Runnable task3 =
+                new BankTransaction(account, "DEPOSIT", 3000);
+
+        Runnable task4 =
+                new BankTransaction(account, "WITHDRAW", 500);
+
+        Runnable task5 =
+                new BankTransaction(account, "DEPOSIT", 1500);
+
+        Runnable task6 =
+                new BankTransaction(account, "WITHDRAW", 2000);
+
+        // Execute Multiple Threads
+        executor.execute(task1);
+        executor.execute(task2);
+        executor.execute(task3);
+        executor.execute(task4);
+        executor.execute(task5);
+        executor.execute(task6);
+
+        // Stop accepting new tasks
+        executor.shutdown();
+
+        try {
+
+            // Wait until all tasks finish
+            if (!executor.awaitTermination(
+                    30, TimeUnit.SECONDS)) {
+
+                executor.shutdownNow();
+            }
+
+        } catch (InterruptedException e) {
+
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+
+        // Final Balance
+        System.out.println("\n===== TRANSACTION SUMMARY =====");
+
+        System.out.println(
+                "Final Balance: " + account.getBalance());
+
+        System.out.println("All Transactions Completed!");
+    }
+}
